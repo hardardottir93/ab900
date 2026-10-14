@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Æfingavefur fyrir Microsoft AB-900: æfingapróf, lykilatriði og enskar glósur úr 39 fyrirlestrum.">
+<meta name="color-scheme" content="light dark">
+<style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>AB-900 æfingasvæði</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-head">
+  <div class="site-head-in">
+    <a class="brand" href="#heim"><span class="brand-mark mono">AB-900</span><span class="brand-name">Æfingasvæði</span></a>
+    <nav class="topnav" aria-label="Aðalvalmynd">
+      <a href="#heim" data-view="home">Forsíða</a>
+      <a href="#prof" data-view="tests">Próf</a>
+      <a href="#lykilatridi" data-view="sheet">Lykilatriði</a>
+      <a href="#fyrirlestrar" data-view="lec">Fyrirlestrar</a>
+      <a href="#framvinda" data-view="status">Framvindan mín</a>
+      <a href="#leit" data-view="search" class="nav-search" aria-label="Leit">⌕ Leit</a>
+      <button type="button" class="theme-btn" id="themeBtn" aria-label="Skipta um útlit" title="Skipta um útlit"><span id="themeIcon">◐</span><span id="themeLabel">Kerfi</span></button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- HOME -->
+  <main id="view-home" class="home" hidden>
+    <section class="hero">
+      <span class="eyebrow">Microsoft 365 Certified · Copilot and Agent Administration Fundamentals</span>
+      <h1>Undirbúningur fyrir AB-900</h1>
+      <p class="lead">Opinberar spurningar úr Microsoft-æfingaprófinu, samantekt á lykilatriðum og enskar glósur og próf úr 39 fyrirlestrum. Framvindan þín vistast sjálfkrafa.</p>
+      <p class="source-line">Fyrirlestrarnir og glósurnar byggja á <a href="https://www.youtube.com/playlist?list=PLeAdpmiY-mCf-1ysvpuGMbtgQsOKV5ESW" target="_blank" rel="noopener">AB-900 fyrirlestraröðinni á YouTube ↗</a></p>
+      <div class="passline">
+        <span>Til að standast: <b>700 / 1000</b></span>
+        <span>Markmið í æfingu: <b>80%+</b></span>
+      </div>
+      <div class="row hero-cta"><a class="btn primary" href="#prof">Byrja próf</a><a class="btn" href="#fyrirlestrar">Skoða fyrirlestra</a></div>
+    </section>
+    <div class="stats" id="homeStats"></div>
+    <section class="cards">
+      <a class="card" href="#prof"><span class="eyebrow">01 · Æfa</span><h2>Próf</h2><p>Microsoft-bankinn, próf úr YouTube-fyrirlestrunum, blandað próf og „Villurnar mínar“. Útskýring eftir hverja spurningu.</p><span class="open">Opna →</span></a>
+      <a class="card" href="#lykilatridi"><span class="eyebrow">02 · Rifja upp</span><h2>Lykilatriði</h2><p>Purview-tólin, algengustu ruglingarnir, hvar hlutirnir eru stilltir og hvaða hlutverk á við.</p><span class="open">Opna →</span></a>
+      <a class="card" href="#fyrirlestrar"><span class="eyebrow">03 · Lesa</span><h2>Fyrirlestrar</h2><p>39 fyrirlestrar á ensku, hver á sinni síðu, með líkingum, töflum og prófaábendingum.</p><span class="open">Opna →</span></a>
+      <a class="card" href="#framvinda"><span class="eyebrow">04 · Fylgjast með</span><h2>Framvindan mín</h2><p>Einkunnirnar þínar og ferill. Sæktu framvinduna í skrá til að eiga afrit.</p><span class="open">Opna →</span></a>
+    </section>
+    <section class="domains">
+      <h2>Prófið skiptist í þrjú svið</h2>
+      <div class="domain-bars">
+        <div class="dbar"><div class="dbar-top"><b>Kjarnaþjónustur, auðkenni og öryggi</b><span class="mono">30–35%</span></div><div class="bar"><i style="width:35%"></i></div></div>
+        <div class="dbar"><div class="dbar-top"><b>Gagnavernd og stjórnun (Purview)</b><span class="mono">35–40%</span></div><div class="bar"><i style="width:40%"></i></div></div>
+        <div class="dbar"><div class="dbar-top"><b>Copilot og agents</b><span class="mono">25–30%</span></div><div class="bar"><i style="width:30%"></i></div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- TESTS -->
+  <main id="view-tests" class="stack" hidden></main>
+  <main id="view-quiz" class="stack" hidden></main>
+
+  <main id="view-sheet" class="sheet" hidden lang="en">
+    <header class="page-head"><span class="eyebrow">Summary · English</span><h1>Key points</h1><p class="lead">The most important facts in one place: which tool fits which job, the most common traps, roles and click paths.</p></header>
+    <section>
+      <h2>The exam at a glance</h2>
+      <div class="tbl"><table>
+        <tr><th>Domain</th><th>Weight</th><th>Content</th></tr>
+        <tr><td><b>1. Core services and security</b></td><td class="mono">30–35%</td><td>Exchange Online, SharePoint, Teams, Entra ID, Zero Trust, Defender</td></tr>
+        <tr><td><b>2. Data protection and governance</b></td><td class="mono">35–40%</td><td>Purview: DLP, sensitivity labels, retention, Insider Risk, eDiscovery, DSPM for AI, oversharing</td></tr>
+        <tr><td><b>3. Copilot and agents</b></td><td class="mono">25–30%</td><td>Licensing, pay-as-you-go billing, usage reporting, building and managing agents</td></tr>
+      </table></div>
+      <p class="callout"><b>Purview</b> carries the most weight and has the most traps. Always ask yourself whether the question is about <b>finding, protecting, stopping, keeping or investigating</b> data.</p>
+    </section>
+
+    <section>
+      <h2>Purview: which tool?</h2>
+      <div class="tbl"><table>
+        <tr><th>You want to…</th><th>Tool</th></tr>
+        <tr><td><b>Find</b> sensitive data (including in AI prompts)</td><td>SITs · trainable classifiers (50+ samples) · EDM</td></tr>
+        <tr><td><b>Protect</b> the file itself, wherever it goes</td><td>Sensitivity labels (encryption travels with the file)</td></tr>
+        <tr><td><b>Stop</b> sharing outside the organisation</td><td>DLP policies</td></tr>
+        <tr><td><b>Keep / delete</b> after a period (including Copilot prompts)</td><td>Retention policies (locations) and labels (items)</td></tr>
+        <tr><td>Freeze all data for a lawsuit</td><td>Litigation hold</td></tr>
+        <tr><td><b>Investigate</b> user actions behind a DLP alert</td><td>Activity explorer</td></tr>
+        <tr><td><b>See where</b> sensitive data lives</td><td>Content / Data explorer</td></tr>
+        <tr><td>See where, but <b>not open</b> files</td><td>Content Explorer <b>List</b> Viewer (Content Viewer can open them)</td></tr>
+        <tr><td><b>See AI usage</b> and shadow AI</td><td>DSPM for AI</td></tr>
+        <tr><td>Find oversharing in the <b>Purview portal</b></td><td>Data risk assessments (in DSPM)</td></tr>
+        <tr><td>Find oversharing in the <b>SharePoint admin center</b></td><td>DAG reports (tenant-wide)</td></tr>
+        <tr><td><b>Assess regulations</b> (GDPR, HIPAA, EU AI Act, NIST AI RMF)</td><td>Compliance Manager</td></tr>
+        <tr><td>Employee leaving + suspicious downloads</td><td>Insider Risk Management (activity + HR signals)</td></tr>
+        <tr><td>Inappropriate language in Teams, email and Copilot chats</td><td>Communication Compliance</td></tr>
+        <tr><td>High-risk users get stricter DLP</td><td>Adaptive Protection</td></tr>
+        <tr><td>Label files on <b>on-premises</b> file servers</td><td>Information Protection scanner</td></tr>
+        <tr><td>Review sets, near-duplicates, redaction</td><td>eDiscovery <b>Premium</b> (Analytics)</td></tr>
+        <tr><td>Where eDiscovery searches</td><td>Exchange Online · SharePoint Online · OneDrive · Teams (not on-premises)</td></tr>
+        <tr><td>A message matches a Communication Compliance policy</td><td>It lands on the <b>Pending</b> tab for review (nothing is deleted automatically)</td></tr>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Most common mix-ups</h2>
+      <div class="tbl"><table>
+        <tr><th>Wrong choice</th><th>Right</th><th>The difference</th></tr>
+        <tr><td>Sensitivity labels</td><td><b>DLP</b></td><td>Labels protect the file; DLP stops sharing</td></tr>
+        <tr><td>SITs</td><td><b>Retention policies</b></td><td>SITs find data; retention controls its lifespan</td></tr>
+        <tr><td>Purview Audit</td><td><b>Activity explorer</b></td><td>DLP alert → Activity explorer</td></tr>
+        <tr><td>DLP</td><td><b>DSPM for AI</b></td><td>"How are users using AI?" → DSPM for AI</td></tr>
+        <tr><td>Site access reviews</td><td><b>DAG reports</b></td><td>Tenant-wide → DAG; one site → access review</td></tr>
+        <tr><td>Compliance Manager</td><td><b>Data risk assessments</b></td><td>Oversharing in Purview → data risk assessments</td></tr>
+        <tr><td>Compliance &amp; privacy controls</td><td><b>AI security controls</b></td><td>"Monitor, detect, respond" = security</td></tr>
+        <tr><td>Conditional Access</td><td><b>Integrated apps</b></td><td>Allow or block agents → M365 admin center</td></tr>
+        <tr><td>DAG reports / site access review</td><td><b>Restricted Access Control</b></td><td>Limiting access = RAC. DAG <i>finds</i> oversharing; access reviews <i>review</i> permissions</td></tr>
+        <tr><td>Microsoft Graph</td><td><b>Connector</b></td><td>Data from <b>external</b> systems → Copilot connector (respects source permissions)</td></tr>
+        <tr><td>Usage reports / audit log</td><td><b>PowerShell export</b></td><td>Prompts one user saved, liked or shared in Prompt Gallery</td></tr>
+        <tr><td>Restricted Content Discovery</td><td><b>Restricted Access Control</b></td><td>RCD hides content without changing permissions; RAC limits access to a group</td></tr>
+        <tr><td>DAG reports</td><td><b>Session summary reports</b></td><td>Unusual file access → session summary</td></tr>
+        <tr><td>Entra admin center</td><td><b>M365 admin center</b></td><td>Copilot licences are assigned in the M365 admin center (Microsoft's answer)</td></tr>
+        <tr><td>Agent Registry</td><td><b>Agent Overview</b></td><td>Overview = dashboard (adoption, trends, alerts); Registry = inventory and management</td></tr>
+        <tr><td>Snapshot report</td><td><b>Activity report</b></td><td>DAG: activity in the last 28 days → activity report; snapshot = a point in time</td></tr>
+        <tr><td>Entra sign-in logs</td><td><b>Purview Audit</b></td><td>User activity across all M365 services → Audit; sign-in logs = sign-ins only</td></tr>
+        <tr><td>Sentinel analytics rules</td><td><b>Conditional Access</b></td><td>Restrict user access to Copilot → CA</td></tr>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Where is it configured?</h2>
+      <div class="tbl"><table>
+        <tr><th>Portal</th><th>What you configure there</th></tr>
+        <tr><td><b>M365 admin center</b></td><td>Setup → Domains · users and licences (including Copilot) · Health → Service health / Message center · Reports → Usage → Copilot · Integrated apps · Requested agents · Copilot → Billing &amp; usage (PAYG)</td></tr>
+        <tr><td><b>Entra admin center</b></td><td>Conditional Access · PIM · sign-in logs / diagnostics · What If · group-based licensing · Roles and administrators (bulk)</td></tr>
+        <tr><td><b>Exchange admin center</b></td><td>Mailboxes (user, shared, resource) · distribution lists · mail flow rules</td></tr>
+        <tr><td><b>SharePoint admin center</b></td><td>Sites · <b>OneDrive settings</b> (no separate OneDrive portal) · DAG reports · Restricted access control · SAM</td></tr>
+        <tr><td><b>Teams admin center</b></td><td>Teams policies (private/shared channels) · meeting / messaging / app policies · transcription (Copilot in Teams needs it)</td></tr>
+        <tr><td><b>Purview portal</b></td><td>DLP · labels · retention · IRM · Communication Compliance · eDiscovery · DSPM for AI · Compliance Manager · Audit</td></tr>
+        <tr><td><b>Defender portal</b></td><td>Unified incident queue (incidents and alerts). Defender XDR correlates signals + AIR</td></tr>
+        <tr><td><b>Power Platform admin center</b></td><td>Environments · Basic user vs Environment maker · scheduled prompts · Copilot Studio agent metrics</td></tr>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Roles (least privilege)</h2>
+      <div class="tbl"><table>
+        <tr><th>Task</th><th>Role</th></tr>
+        <tr><td>Reset passwords</td><td>Helpdesk / Password Administrator</td></tr>
+        <tr><td>Copilot settings, approve agents, PAYG billing</td><td>AI Administrator</td></tr>
+        <tr><td>View only</td><td>Global Reader</td></tr>
+        <tr><td>Manage a team's licences</td><td>License Administrator</td></tr>
+        <tr><td>Create users (onboarding)</td><td>User Administrator</td></tr>
+        <tr><td>Review usage logs</td><td>Compliance Administrator</td></tr>
+        <tr><td>Delete another user's scheduled prompts</td><td>Power Platform Administrator (first)</td></tr>
+        <tr><td>Consent to a partner agent's permissions in Security Copilot</td><td>Global Administrator</td></tr>
+        <tr><td>Edit an agent in a Power Platform environment</td><td>Environment maker (a Basic user can only use it)</td></tr>
+      </table></div>
+      <p class="muted">One user: M365 admin center → Users → Manage roles. Many at once: Entra → Roles and administrators → Add assignments.</p>
+    </section>
+
+    <section>
+      <h2>Identity and Zero Trust</h2>
+      <div class="tbl"><table>
+        <tr><th>Concept</th><th>Key point</th></tr>
+        <tr><td><b>Authentication vs authorization</b></td><td>Who you are (ID check) vs what you may do (the key card)</td></tr>
+        <tr><td><b>3 principles</b></td><td>Verify explicitly · Least privilege · Assume breach</td></tr>
+        <tr><td><b>6 pillars</b></td><td>Identities · Endpoints · Applications · Data · Infrastructure · Networks</td></tr>
+        <tr><td><b>PHS / PTA / Federation</b></td><td>PHS: hash to the cloud, works if on-prem goes down. PTA: no password in the cloud. Federation: AD FS</td></tr>
+        <tr><td><b>Conditional Access</b></td><td>Required: <b>Users or agents + Target resources</b>. Needs Entra ID P1; risk-based needs P2</td></tr>
+        <tr><td><b>App registration vs enterprise app</b></td><td>Registration = the app's identity and auth settings. Enterprise app (service principal) = the tenant instance where access and SSO are managed</td></tr>
+        <tr><td><b>MFA on risky sign-ins</b></td><td>Risk-based Conditional Access (Entra ID Protection, P2) — not access reviews or security defaults</td></tr>
+        <tr><td><b>Sign-in logs / What If / Sign-in diagnostics</b></td><td>What happened / what would happen / which policy required MFA</td></tr>
+        <tr><td><b>PIM</b></td><td>Eligible → the user activates the role (just-in-time)</td></tr>
+        <tr><td><b>Passwordless</b></td><td>FIDO2 passkey (not SMS, voice call or Temporary Access Pass)</td></tr>
+        <tr><td><b>Group-based licensing</b></td><td>Removed from the group → licence removed automatically</td></tr>
+        <tr><td><b>Service health vs Message center</b></td><td>Outages now vs changes coming</td></tr>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Copilot</h2>
+      <ul class="tight">
+        <li><b>The golden rule:</b> Copilot only sees what the user is allowed to see. Graph retrieves the context (files, mail, meetings, chats).</li>
+        <li>Prompts and responses are <b>not</b> used to train models and get the same protection as email and files.</li>
+        <li><b>Copilot Chat</b> (free, web-grounded, standalone) vs <b>Microsoft 365 Copilot</b> (licensed, Graph data, built into Word/Excel/Outlook/Teams).</li>
+        <li><b>"Copilot isn't showing in Word":</b> Service health first → licence → Microsoft 365 Apps for enterprise (File → Account → Update now).</li>
+        <li>Copilot in Teams needs <b>meeting transcription</b>.</li>
+        <li>The Word, Excel and PowerPoint agents disappear if the <b>Anthropic AI models connection</b> is turned off in the M365 admin center.</li>
+        <li><b>Enabled Users</b> = licensed · <b>Active Users</b> = actually used it. Reports lag 24–48 hours.</li>
+        <li><b>Viva Insights Copilot Analytics</b> = Copilot Dashboard + Advanced Insights Analyst Workbench.</li>
+        <li><b>Researcher</b> = multi-step research with citations (unstructured data) · <b>Analyst</b> = tabular data, no DAX.</li>
+        <li><b>Copilot Control System → Data access</b> controls which users and groups can use agents.</li>
+        <li><b>Defender for Office 365</b> = phishing, malicious links and malware in email and files.</li>
+        <li><b>Copilot Control System:</b> AI security controls (monitor, detect, respond) · Compliance &amp; privacy · Management · Measurement &amp; reporting.</li>
+        <li><b>6 Responsible AI principles:</b> Fairness · Reliability &amp; safety · Privacy &amp; security · Inclusiveness · Transparency · Accountability.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Pay-as-you-go</h2>
+      <ul class="tight">
+        <li><b>Two steps, both required:</b> 1) create a billing policy, 2) connect it to the service on the <i>Pay-as-you-go services</i> tab. Off by default.</li>
+        <li>Scope: <b>all users or one group</b> — not individual users.</li>
+        <li>Alerts at 80% and 100% · budget resets monthly, quarterly or yearly.</li>
+        <li><b>M365 admin center</b> = overview · <b>Azure Cost Management</b> = group by UPN, forecasts, CSV / Power BI export.</li>
+        <li>Licence = built-in Copilot features · PAYG = usage charges for data retrieval and APIs. Monthly licences = security risk (overlicensing); PAYG = financial risk.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Agents</h2>
+      <div class="tbl"><table>
+        <tr><th></th><th>Copilot Studio (Lite)</th><th>SharePoint agent</th></tr>
+        <tr><td>Scope</td><td>Whole organisation</td><td>One site or library</td></tr>
+        <tr><td>Knowledge sources</td><td class="mono">up to 20</td><td class="mono">up to 20</td></tr>
+        <tr><td>Starter prompts</td><td>Unlimited</td><td class="mono">max 3</td></tr>
+        <tr><td>Templates / code interpreter / images</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Welcome message</td><td>No</td><td>Yes</td></tr>
+        <tr><td>To create</td><td>Copilot Studio licence (per user) to publish</td><td>Edit permission on the site</td></tr>
+      </table></div>
+      <ul class="tight">
+        <li><b>Declarative</b> = M365 data + built-in orchestration · <b>Custom engine</b> = own orchestration, external systems, own models.</li>
+        <li><b>Template trap:</b> a template in Configure resets everything you did in Describe.</li>
+        <li>The ready-made site agent is <b>locked</b>. A custom SharePoint agent is a <span class="mono">.agent</span> file in Site assets → Copilots.</li>
+        <li>Updated SharePoint agent with restricted files → <b>reshare</b> it.</li>
+        <li>Agent published to the organisation → <b>admin approval</b> in the M365 admin center (Requested agents). Users can't see it until then.</li>
+        <li><b>Integrated apps</b>: view permissions, allow or block agents.</li>
+        <li>Agent Registry <b>Risks</b> column = active <b>high-severity</b> alerts.</li>
+        <li><b>Block</b> (reversible) vs <b>Remove</b> (from inventory). Announce retirement <b>30 days</b> ahead.</li>
+        <li>An agent with more permissions than it needs → reduce to <b>read-only</b>.</li>
+      </ul>
+    </section>
+  </main>
+
+  
+  <!-- LECTURES -->
+  <main id="view-lec" class="lec" hidden>
+    <header class="page-head"><span class="eyebrow">Lecture notes · English</span><h1>Lectures</h1><p class="lead">Notes from all 39 lectures, grouped by exam domain. Open a lecture to read its notes, with analogies, comparison tables and exam tips, and test yourself at the end.</p><p class="source-line">Source: <a href="https://www.youtube.com/playlist?list=PLeAdpmiY-mCf-1ysvpuGMbtgQsOKV5ESW" target="_blank" rel="noopener">the AB-900 lecture series on YouTube ↗</a>. These notes are taken from the lecturer's own words in the videos.</p></header>
+    <div id="lecProgress" class="lec-progress"></div>
+    <div id="lecList" class="lec"></div>
+  </main>
+  <main id="view-lecture" class="lecture" hidden lang="en"></main>
+
+  <!-- SEARCH -->
+  <main id="view-search" class="search" hidden>
+    <header class="page-head"><span class="eyebrow">Leit</span><h1>Leita á vefnum</h1><p class="lead">Leitar í öllum fyrirlestraglósum, lykilatriðum og spurningum í einu.</p></header>
+    <input type="search" id="searchInput" class="search-input" placeholder="T.d. DLP, PIM, Integrated apps, 20 sources…" autocomplete="off" aria-label="Leitarorð">
+    <div id="searchResults" class="search-results"></div>
+  </main>
+
+  <!-- STATUS -->
+  <main id="view-status" class="stack" hidden>
+    <header class="page-head"><span class="eyebrow">Bara þín gögn</span><div class="qhead"><h1>Framvindan mín</h1><span class="sync" id="syncBadge"><i></i><span id="syncText">Vistað í þessum vafra</span></span></div></header>
+    <p class="muted">Niðurstöðurnar þínar sjást bara hjá þér. Aðrir sem nota síðuna sjá ekki þína framvindu og þú ekki þeirra.</p>
+    <div class="stats" id="stats"></div>
+    <section class="save-box">
+      <h3>Geyma framvinduna</h3>
+      <p class="muted" id="syncNote">Framvindan er geymd í þessum vafra. Sæktu hana í skrá til að eiga afrit ef vafrinn er hreinsaður, og hlaðaðu skránni inn aftur hér.</p>
+      <div class="row">
+        <button class="btn primary" id="exportBtn">Sækja framvindu í skrá</button>
+        <label class="btn" for="importFile" tabindex="0" id="importLabel">Hlaða inn skrá</label>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+      <div id="manualBox" hidden>
+        <p class="hint">Hér er ekki hægt að sækja skrá beint. Afritaðu textann og vistaðu hann, eða límdu inn texta úr eldra afriti og smelltu á „Hlaða inn texta“.</p>
+        <textarea id="manualText" spellcheck="false" aria-label="Framvinda sem texti"></textarea>
+        <div class="row"><button class="btn small" id="copyBtn">Afrita</button><button class="btn small" id="pasteLoad">Hlaða inn texta</button></div>
+      </div>
+      <p class="hint" id="ioMsg" role="status"></p>
+    </section>
+    <div class="qhead"><h3>Ferill</h3><button class="btn small" id="clearHist">Hreinsa framvinduna</button></div>
+    <div class="hist" id="histList"></div>
+  </main>
+</div>
+
+<script src="ab900-data.js"></script>
+<script src="ab900-lectures.js"></script>
+<script src="ab900-lecture-quiz.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
