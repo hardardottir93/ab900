@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Æfingavefur fyrir Microsoft AB-900: æfingapróf, lykilatriði og enskar glósur úr 39 fyrirlestrum.">
 <meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#2b54c9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AB-900">
 <style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>AB-900 æfingasvæði</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +50,7 @@
     </section>
     <div class="stats" id="homeStats"></div>
     <section class="cards">
-      <a class="card" href="#prof"><span class="eyebrow">01 · Æfa</span><h2>Próf</h2><p>Microsoft-bankinn, próf úr YouTube-fyrirlestrunum, blandað próf og „Villurnar mínar“. Útskýring eftir hverja spurningu.</p><span class="open">Opna →</span></a>
+      <a class="card" href="#prof"><span class="eyebrow">01 · Æfa</span><h2>Próf</h2><p>Microsoft-spurningar, próf úr fyrirlestrunum og upprifjun á villunum þínum. Útskýring eftir hverja spurningu.</p><span class="open">Opna →</span></a>
       <a class="card" href="#lykilatridi"><span class="eyebrow">02 · Rifja upp</span><h2>Lykilatriði</h2><p>Purview-tólin, algengustu ruglingarnir, hvar hlutirnir eru stilltir og hvaða hlutverk á við.</p><span class="open">Opna →</span></a>
       <a class="card" href="#fyrirlestrar"><span class="eyebrow">03 · Lesa</span><h2>Fyrirlestrar</h2><p>39 fyrirlestrar á ensku, hver á sinni síðu, með líkingum, töflum og prófaábendingum.</p><span class="open">Opna →</span></a>
       <a class="card" href="#framvinda"><span class="eyebrow">04 · Fylgjast með</span><h2>Framvindan mín</h2><p>Einkunnirnar þínar og ferill. Sæktu framvinduna í skrá til að eiga afrit.</p><span class="open">Opna →</span></a>
@@ -251,12 +257,12 @@
 
   <!-- STATUS -->
   <main id="view-status" class="stack" hidden>
-    <header class="page-head"><span class="eyebrow">Bara þín gögn</span><div class="qhead"><h1>Framvindan mín</h1><span class="sync" id="syncBadge"><i></i><span id="syncText">Vistað í þessum vafra</span></span></div></header>
+    <header class="page-head"><span class="eyebrow">Bara þín gögn</span><div class="qhead"><h1>Framvindan mín</h1><span class="sync on" id="syncBadge"><i></i><span id="syncText">Vistað í þessum vafra</span></span></div></header>
     <p class="muted">Niðurstöðurnar þínar sjást bara hjá þér. Aðrir sem nota síðuna sjá ekki þína framvindu og þú ekki þeirra.</p>
     <div class="stats" id="stats"></div>
     <section class="save-box">
       <h3>Geyma framvinduna</h3>
-      <p class="muted" id="syncNote">Framvindan er geymd í þessum vafra. Sæktu hana í skrá til að eiga afrit ef vafrinn er hreinsaður, og hlaðaðu skránni inn aftur hér.</p>
+      <p class="muted" id="syncNote">Framvindan er aðeins geymd í þessum vafra, á þessu tæki. Hún tapast ef vafrinn er hreinsaður eða ef þú skiptir um tæki. Sæktu hana því reglulega í skrá og hlaðaðu henni inn aftur hér þegar þarf.</p>
       <div class="row">
         <button class="btn primary" id="exportBtn">Sækja framvindu í skrá</button>
         <label class="btn" for="importFile" tabindex="0" id="importLabel">Hlaða inn skrá</label>
@@ -277,6 +283,9 @@
 <script src="ab900-data.js"></script>
 <script src="ab900-lectures.js"></script>
 <script src="ab900-lecture-quiz.js"></script>
+<script src="ab900-match.js"></script>
+<script src="ab900-diff.js"></script>
 <script src="app.js"></script>
+<script>if("serviceWorker" in navigator){ addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {})); }</script>
 </body>
 </html>

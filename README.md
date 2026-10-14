@@ -9,6 +9,8 @@
 - **Leit** í glósum, lykilatriðum og spurningum
 - Ljóst og dökkt útlit
 
+Hægt er að setja síðuna upp sem app á heimaskjánum (Chrome: „Install app“ / Safari: Deila → „Add to Home Screen“). Hún virkar þá líka án nettengingar.
+
 Framvindan vistast í vafranum. Hægt er að sækja hana í skrá og hlaða henni inn aftur undir „Framvindan mín“.
 
 ## Heimildir

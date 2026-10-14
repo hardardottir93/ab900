@@ -89,8 +89,14 @@ ALL.forEach(q => { if(!seen.has(q.key)){ seen.add(q.key); UNIQUE.push(q); } });
 const YT_URL = "https://www.youtube.com/playlist?list=PLeAdpmiY-mCf-1ysvpuGMbtgQsOKV5ESW";
 const lecDomain = q => (LECTURES[q.lec-1] || {}).d;
 const LQ = (window.AB900_LQ || []).map((q,i) => ({key:"lq:"+q[0], prompt:q[0], opts:q[1], ans:q[2], expl:q[3], src:"lec", lec:q[4], n:i+1, dom:+((LECTURES[q[4]-1]||{}).d)||0}));
+const MQ = (window.AB900_MATCH || []).map((m,i) => {
+  const rights = [...new Set(m.pairs.map(p => p[1]).concat(m.extra || []))];
+  return {type:"match", key:"mq:"+m.p+"|"+m.pairs.map(p=>p[0]).join("|"), prompt:m.p, pairs:m.pairs, choices:rights, expl:m.x, src:"lec", lec:m.lec, n:i+1, dom:+((LECTURES[m.lec-1]||{}).d)||0};
+});
+const DQ = [];
+(window.AB900_DIFF || []).forEach(p => p.s.forEach(sc => DQ.push({type:"diff", key:"dq:"+sc[0], prompt:sc[0], pair:p.a+" eða "+p.b+"?", opts:[p.a, p.b], ans:sc[1], expl:p.d, src:"lec", lec:p.lec, n:DQ.length+1, dom:+((LECTURES[p.lec-1]||{}).d)||0})));
 function lectureSet(n){
-  const l = LECTURES[n-1]; const qs = LQ.filter(q => q.lec===n);
+  const l = LECTURES[n-1]; const qs = LQ.concat(MQ, DQ).filter(q => q.lec===n);
   return {id:"lql-"+n, name:"Lecture "+n+": "+(l ? l.t : ""), qs, so:true};
 }
 const totalEl = $("#totalQ"); if(totalEl) totalEl.textContent = ALL.length;
@@ -101,17 +107,19 @@ function nextDueText(qs, wrong){
 }
 function testSets(){
   const wrong = srsGet(); const now = Date.now();
-  const wrongQs = UNIQUE.concat(LQ).filter(q => wrong[q.key]);
+  const wrongQs = UNIQUE.concat(LQ, MQ, DQ).filter(q => wrong[q.key]);
   const dueQs = wrongQs.filter(q => wrong[q.key].due <= now);
   return [
-    {id:"ms", name:"Microsoft-bankinn", desc:"Opinberar spurningar úr Microsoft-æfingaprófinu fyrir AB-900, safnaðar úr mörgum tilraunum.", qs:ALL.filter(q=>q.src>=2), group:"ms"},
-    {id:"lq", name:"Fyrirlestraprófið: allt", desc:"Allt sem kennarinn sagði að þyrfti pottþétt að kunna, úr öllum 39 fyrirlestrunum.", qs:LQ, group:"lec", so:true},
-    {id:"lq1", name:"Svið 1: Kjarnaþjónustur, auðkenni og öryggi", desc:"Fyrirlestrar 1–13.", qs:LQ.filter(q=>lecDomain(q)==="1"), group:"lec", so:true},
-    {id:"lq2", name:"Svið 2: Gagnavernd og stjórnun", desc:"Fyrirlestrar 14–19 (Purview og oversharing).", qs:LQ.filter(q=>lecDomain(q)==="2"), group:"lec", so:true},
-    {id:"lq3", name:"Svið 3: Copilot og agents", desc:"Fyrirlestrar 20–39.", qs:LQ.filter(q=>lecDomain(q)==="3"), group:"lec", so:true},
-    {id:"mix", name:"Blandað próf (Microsoft)", desc:"50 Microsoft-spurningar af handahófi úr Microsoft-bankanum, eins og alvöru próf.", qs:UNIQUE, pick:50, group:"mix"},
-    {id:"due", name:"Upprifjun dagsins", desc:dueQs.length ? "Villur sem eru komnar á tíma. Svarirðu rétt kemur spurningin næst eftir 3 daga, svo eftir 7 daga, og dettur svo út. Svarirðu vitlaust byrjar hún upp á nýtt á morgun." : (wrongQs.length ? "Ekkert á dagskrá í dag. Næsta upprifjun: " + nextDueText(wrongQs, wrong) + "." : "Tómt í bili. Spurningar sem þú svarar vitlaust koma hingað daginn eftir."), qs:dueQs, group:"srs"},
-    {id:"wrong", name:"Villurnar mínar", desc:wrongQs.length ? "Allar spurningar sem þú átt eftir að ná tökum á, úr öllum prófunum. Þær detta út eftir þrjár réttar upprifjanir með millibili." : "Tómt í bili. Spurningar sem þú svarar vitlaust í hvaða prófi sem er safnast hingað.", qs:wrongQs, group:"srs"}
+    {id:"mix", name:"Blandað próf (Microsoft)", desc:"50 Microsoft-spurningar af handahófi, eins og alvöru próf.", qs:UNIQUE, pick:50, group:"main"},
+    {id:"ms", name:"Microsoft-bankinn", desc:"Allar opinberu spurningarnar úr Microsoft-æfingaprófinu.", qs:ALL.filter(q=>q.src>=2), group:"main"},
+    {id:"lq", name:"Fyrirlestraprófið: allt", desc:"Allt sem kennarinn sagði að þyrfti pottþétt að kunna, úr öllum 39 fyrirlestrunum.", qs:LQ.concat(MQ), group:"lec", so:true},
+    {id:"mq", name:"Tengispurningar", desc:"Paraðu saman atriði, t.d. tól og hlutverk þess, eins og í Microsoft-prófunum.", qs:MQ, group:"lec", so:true},
+    {id:"diff", name:"Hver er munurinn?", desc:"Stuttar spurningar um hugtök sem ruglast oft saman, t.d. sensitivity labels og DLP. 15 í hvert skipti.", qs:DQ, pick:15, group:"lec"},
+    {id:"lq1", name:"Svið 1: Kjarnaþjónustur, auðkenni og öryggi", desc:"Fyrirlestrar 1–13.", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="1"), group:"more", so:true},
+    {id:"lq2", name:"Svið 2: Gagnavernd og stjórnun", desc:"Fyrirlestrar 14–19 (Purview og oversharing).", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="2"), group:"more", so:true},
+    {id:"lq3", name:"Svið 3: Copilot og agents", desc:"Fyrirlestrar 20–39.", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="3"), group:"more", so:true},
+    {id:"due", name:"Upprifjun dagsins", desc:dueQs.length ? "Villur sem eru komnar á tíma. Svarirðu rétt kemur spurningin næst eftir 3 daga, svo eftir 7 daga, og dettur svo út. Svarirðu vitlaust byrjar hún upp á nýtt á morgun." : (wrongQs.length ? "Ekkert á dagskrá í dag. Næsta upprifjun: " + nextDueText(wrongQs, wrong) + "." : "Tómt í bili. Spurningar sem þú svarar vitlaust koma hingað daginn eftir."), qs:dueQs, group:"due"},
+    {id:"wrong", name:"Villurnar mínar", desc:wrongQs.length ? "Allar spurningar sem þú átt eftir að ná tökum á, úr öllum prófunum. Þær detta út eftir þrjár réttar upprifjanir með millibili." : "Tómt í bili. Spurningar sem þú svarar vitlaust í hvaða prófi sem er safnast hingað.", qs:wrongQs, group:"more"}
   ];
 }
 
@@ -174,15 +182,15 @@ function renderTests(){
       <label><input type="checkbox" id="optSQ" ${opts.sq?"checked":""}> Stokka röð spurninga</label>
       <label><input type="checkbox" id="optSO" ${opts.so?"checked":""}> Stokka svarmöguleika</label>
     </div>
-    <span class="eyebrow group-label">Opinberar Microsoft-spurningar</span>
-    <div class="tests">${sets.filter(s=>s.group==="ms").map(row).join("")}</div>
+    ${(() => { const due = sets.find(s => s.id==="due"); return due.qs.length ? '<div class="due-banner"><div><span class="eyebrow">Upprifjun dagsins</span><h3>'+due.qs.length+' '+(due.qs.length===1?'spurning bíður':'spurningar bíða')+' upprifjunar</h3><p class="muted">Villur sem eru komnar á tíma. Rétt svar sendir þær lengra fram í tímann.</p></div><button class="btn primary" data-start="due">Byrja</button></div>' : ''; })()}
+    <span class="eyebrow group-label">Microsoft-æfingaprófið</span>
+    <div class="tests">${sets.filter(s=>s.group==="main").map(row).join("")}</div>
     <span class="eyebrow group-label">Úr YouTube-fyrirlestrunum</span>
-    <p class="muted src-note">Spurningar byggðar á því sem kennarinn sagði að þyrfti pottþétt að kunna fyrir prófið. Efnið kemur úr <a href="${YT_URL}" target="_blank" rel="noopener">AB-900 fyrirlestraröðinni á YouTube</a>. Einnig er hægt að prófa sig í hverjum fyrirlestri fyrir sig á síðu hans.</p>
     <div class="tests">${sets.filter(s=>s.group==="lec").map(row).join("")}</div>
-    <span class="eyebrow group-label">Endurtekning með millibili</span>
-    <div class="tests">${sets.filter(s=>s.group==="srs").map(row).join("")}</div>
-    <span class="eyebrow group-label">Blandað</span>
-    <div class="tests">${sets.filter(s=>s.group==="mix").map(row).join("")}</div>`;
+    <p class="muted src-note">Byggt á <a href="${YT_URL}" target="_blank" rel="noopener">AB-900 fyrirlestraröðinni á YouTube</a>. Á hverri fyrirlestrasíðu er líka stutt próf úr þeim fyrirlestri.</p>
+    <details class="more-tests"><summary>Fleiri próf <span class="muted">eftir sviðum og villurnar mínar</span></summary>
+      <div class="tests">${sets.filter(s=>s.group==="more").map(row).join("")}</div>
+    </details>`;
   const saveOpts = () => store.set("opts", {sq:$("#optSQ").checked, so:$("#optSO").checked});
   $("#optSQ").addEventListener("change", saveOpts);
   $("#optSO").addEventListener("change", saveOpts);
@@ -198,6 +206,7 @@ function start(id){
   if(set.pick){ qs = shuffle(qs).slice(0, set.pick); }
   else if(opts.sq){ qs = shuffle(qs); }
   qs = qs.map(q => {
+    if(q.type === "match") return {...q, choiceOrder: shuffle(q.choices), rowOrder: shuffle(q.pairs.map((_,i)=>i))};
     let order = q.opts.map((_,i)=>i);
     if(opts.so || set.so) order = shuffle(order);
     return {...q, order};
@@ -206,14 +215,60 @@ function start(id){
   quizActive = true; show("tests"); renderQ();
   window.scrollTo({top:0});
 }
+function renderMatch(q, done, right){
+  const vals = done ? Q.picked : (Q.draft || []);
+  const ok = done && Q.results[Q.results.length-1];
+  $("#view-quiz").innerHTML = `
+    <div class="qhead"><span class="eyebrow">${esc(Q.name)}</span><button class="btn small" id="quit">Hætta</button></div>
+    <div class="qhead"><span class="mono">Spurning ${Q.i+1} / ${Q.qs.length}</span><span class="mono muted">${right} rétt</span></div>
+    <div class="bar"><i style="width:${(Q.i/Q.qs.length)*100}%"></i></div>
+    <div class="qcard">
+      <span class="qtype">Tengispurning</span>
+      <p class="qtext">${esc(q.prompt)}</p>
+      <div class="match">${q.rowOrder.map(ri => {
+        const [left, correct] = q.pairs[ri]; const v = vals[ri] || "";
+        const cls = done ? (v === correct ? "right" : "wrong") : "";
+        return '<div class="match-row '+cls+'"><span class="match-left">'+esc(left)+'</span>'
+          + '<select class="match-sel" data-r="'+ri+'" '+(done?"disabled":"")+' aria-label="Pörun fyrir '+esc(left)+'"><option value="">Veldu…</option>'
+          + q.choiceOrder.map(c => '<option'+(c===v?' selected':'')+'>'+esc(c)+'</option>').join("") + '</select>'
+          + (done && v !== correct ? '<span class="match-fix">Rétt: <b>'+esc(correct)+'</b></span>' : '') + '</div>';
+      }).join("")}</div>
+      ${done ? '<div class="feedback '+(ok?"ok":"no")+'"><strong>'+(ok?"Rétt":"Ekki alveg — "+q.pairs.filter((p,i)=>vals[i]===p[1]).length+" af "+q.pairs.length+" rétt")+'</strong><span>'+esc(q.expl)+'</span><a class="readmore" href="#fyrirlestur-'+q.lec+'">Lesa glósurnar: Lecture '+q.lec+' →</a></div>' : ""}
+      <div class="qfoot">
+        <span class="src">YouTube-fyrirlestur ${q.lec}: ${esc((LECTURES[q.lec-1]||{}).t||"")}</span>
+        ${done ? '<button class="btn primary" id="next">'+(Q.i+1<Q.qs.length?"Næsta":"Sjá niðurstöðu")+'</button>' : '<button class="btn primary" id="submitMatch" disabled>Svara</button>'}
+      </div>
+    </div>`;
+  $("#quit").addEventListener("click", quit);
+  if(done){ $("#next").addEventListener("click", next); $("#next").focus(); return; }
+  const sels = [...document.querySelectorAll(".match-sel")];
+  const sync = () => { Q.draft = Q.draft || []; sels.forEach(s => { Q.draft[+s.dataset.r] = s.value; }); $("#submitMatch").disabled = sels.some(s => !s.value); };
+  sels.forEach(s => s.addEventListener("change", sync)); sync();
+  $("#submitMatch").addEventListener("click", () => pickMatch(q.pairs.map((_,i) => Q.draft[i] || "")));
+}
+function pickMatch(vals){
+  if(Q.picked!==null) return;
+  const q = Q.qs[Q.i]; Q.picked = vals; Q.draft = null;
+  const ok = q.pairs.every((p,i) => vals[i] === p[1]); Q.results.push(ok);
+  srsRecord(q, ok); q.yours = vals;
+  renderQ();
+}
+function srsRecord(q, ok){
+  const wrong = srsGet(); const now = Date.now(); const cur = wrong[q.key];
+  if(!ok) wrong[q.key] = {b:0, due: now + SRS_DAYS[0]*DAY};
+  else if(cur && cur.due <= now){ const b = cur.b + 1; if(b >= SRS_DAYS.length) delete wrong[q.key]; else wrong[q.key] = {b, due: now + SRS_DAYS[b]*DAY}; }
+  store.set("wrong", wrong);
+}
 function renderQ(){
   const q = Q.qs[Q.i], done = Q.picked!==null, right = Q.results.filter(Boolean).length;
+  if(q.type === "match") return renderMatch(q, done, right);
   const keys = "ABCD";
   $("#view-quiz").innerHTML = `
     <div class="qhead"><span class="eyebrow">${esc(Q.name)}</span><button class="btn small" id="quit">Hætta</button></div>
     <div class="qhead"><span class="mono">Spurning ${Q.i+1} / ${Q.qs.length}</span><span class="mono muted">${right} rétt</span></div>
     <div class="bar"><i style="width:${(Q.i/Q.qs.length)*100}%"></i></div>
     <div class="qcard">
+      ${q.type==="diff" ? '<span class="qtype">Hver er munurinn? · '+esc(q.pair)+'</span>' : ''}
       <p class="qtext">${esc(q.prompt)}</p>
       <div class="choices">${q.order.map((oi,pos) => {
         let cls = "";
@@ -242,7 +297,7 @@ function pick(o){
   renderQ();
 }
 function next(){
-  if(Q.i+1<Q.qs.length){ Q.i++; Q.picked=null; renderQ(); window.scrollTo({top:0}); }
+  if(Q.i+1<Q.qs.length){ Q.i++; Q.picked=null; Q.draft=null; renderQ(); window.scrollTo({top:0}); }
   else finish();
 }
 function quit(){ quizActive=false; Q=null; renderTests(); show("tests"); }
@@ -269,8 +324,8 @@ function finish(){
     </div>
     ${wrongs.length ? `<h2>Villurnar (${wrongs.length})</h2><div class="review">${wrongs.map(q => `
       <div class="rv"><p><b>${esc(q.prompt)}</b></p>
-        <p class="y">Þitt svar: ${esc(q.opts[q.yours])}</p>
-        <p class="a">Rétt: <b>${esc(q.opts[q.ans])}</b></p>
+        ${q.type === "match" ? '<ul class="rv-match">' + q.pairs.map((p,i) => '<li>'+esc(p[0])+' → <b>'+esc(p[1])+'</b>'+(q.yours[i]!==p[1] ? ' <span class="y">(þú: '+esc(q.yours[i]||"–")+')</span>' : '')+'</li>').join("") + '</ul>' :
+        '<p class="y">Þitt svar: '+esc(q.opts[q.yours])+'</p><p class="a">Rétt: <b>'+esc(q.opts[q.ans])+'</b></p>'}
         <p class="muted" style="font-size:14px">${esc(q.expl)}</p></div>`).join("")}</div>` : `<p class="muted">Engar villur. Vel gert!</p>`}`;
   const id = Q.id;
   $("#quit").addEventListener("click", quit);
@@ -280,11 +335,11 @@ function finish(){
 }
 document.addEventListener("keydown", e => {
   if(!quizActive || !Q || $("#view-quiz").hidden) return;
-  if(e.target.tagName==="INPUT") return;
+  if(e.target.tagName==="INPUT" || e.target.tagName==="SELECT") return;
   const k = e.key.toLowerCase();
   const idx = "abcd".indexOf(k) >= 0 ? "abcd".indexOf(k) : "1234".indexOf(k);
   const q = Q.qs[Q.i];
-  if(idx>=0 && q && Q.picked===null && idx<q.order.length){ pick(q.order[idx]); e.preventDefault(); }
+  if(idx>=0 && q && q.order && Q.picked===null && idx<q.order.length){ pick(q.order[idx]); e.preventDefault(); }
   else if(e.key==="Enter" && Q.picked!==null && document.activeElement?.id!=="next"){ next(); e.preventDefault(); }
 });
 
@@ -353,7 +408,7 @@ function renderLecture(n){
     + (secs.length > 2 ? '<div class="toc"><span class="eyebrow">On this page</span><div class="toc-list">'+secs.map((t,k) => '<button type="button" data-sec="sec-'+k+'">'+inline(t)+'</button>').join("")+'</div></div>' : '')
     + '<article class="notes">'+md(l.md)+'</article>'
     + '<div class="done-row"><button class="btn'+(isRead(n)?' is-on':'')+'" type="button" id="readToggle2">'+(isRead(n)?'✓ Read — nice work':'Mark this lecture as read')+'</button></div>'
-    + (LQ.some(q => q.lec===n) ? '<section class="selftest"><div><span class="eyebrow">Test yourself</span><h2>'+LQ.filter(q=>q.lec===n).length+' must-know questions from this lecture</h2></div><button class="btn primary" type="button" id="lecTest">Start</button></section>' : '')
+    + (LQ.concat(MQ).some(q => q.lec===n) ? '<section class="selftest"><div><span class="eyebrow">Test yourself</span><h2>'+LQ.concat(MQ).filter(q=>q.lec===n).length+' must-know questions from this lecture</h2></div><button class="btn primary" type="button" id="lecTest">Start</button></section>' : '')
     + '<nav class="pager">'
     + (prev ? '<a href="#fyrirlestur-'+(n-1)+'"><span>← Previous</span><b>'+esc(prev.t)+'</b></a>' : '<span></span>')
     + (next ? '<a class="next" href="#fyrirlestur-'+(n+1)+'"><span>Next →</span><b>'+esc(next.t)+'</b></a>' : '<a class="next" href="#fyrirlestrar"><span>Done</span><b>Back to all lectures</b></a>')
@@ -393,7 +448,8 @@ function runSearch(raw){
   if(q.length < 2){ out.innerHTML = '<p class="muted">Skrifaðu að minnsta kosti tvo stafi, t.d. „DLP“, „PIM“ eða „Integrated apps“.</p>'; return; }
   const lec = []; LECTURES.forEach((l,i) => { const lines = l.md.split("\n").filter(x => norm(plain(x)).includes(q)); if(lines.length || norm(l.t).includes(q)) lec.push({n:i+1, l, lines}); });
   const sheet = sheetIndex().filter(r => norm(r.text).includes(q));
-  const qs = ALL.concat(LQ).filter(x => norm(x.prompt).includes(q) || norm(x.opts[x.ans]).includes(q) || norm(x.expl).includes(q));
+  const qtext = x => x.type === "match" ? x.pairs.map(p => p[0]+" "+p[1]).join(" ") : x.opts[x.ans];
+  const qs = ALL.concat(LQ, MQ, DQ).filter(x => norm(x.prompt).includes(q) || norm(qtext(x)).includes(q) || norm(x.expl).includes(q));
   const total = lec.length + sheet.length + qs.length;
   if(!total){ out.innerHTML = '<p class="muted">Ekkert fannst fyrir „'+esc(raw.trim())+'“.</p>'; return; }
   let h = '<p class="muted">'+total+' niðurstöður</p>';
@@ -403,14 +459,23 @@ function runSearch(raw){
   if(sheet.length) h += '<section class="sr-group"><h2>Lykilatriði <span class="mono muted">'+sheet.length+'</span></h2>' + sheet.slice(0,20).map(r =>
     '<a class="sr-item" href="#lykilatridi"><span class="eyebrow">'+esc(r.title)+'</span><span class="sr-snip">'+hl(r.text, q)+'</span></a>').join("") + '</section>';
   if(qs.length) h += '<section class="sr-group"><h2>Spurningar <span class="mono muted">'+qs.length+'</span></h2>' + qs.slice(0,25).map(x =>
-    '<details class="sr-item sr-q"><summary><span class="eyebrow">'+(x.src==="lec" ? "Lecture "+x.lec : "Microsoft-bankinn")+'</span><b>'+hl(x.prompt, q)+'</b></summary>'
-    + '<p class="a">Rétt svar: <b>'+hl(x.opts[x.ans], q)+'</b></p><p class="muted">'+hl(x.expl, q)+'</p></details>').join("") + '</section>';
+    '<details class="sr-item sr-q"><summary><span class="eyebrow">'+(x.type==="diff" ? "Hver er munurinn? · Lecture "+x.lec : x.src==="lec" ? "Lecture "+x.lec : "Microsoft-bankinn")+'</span><b>'+hl(x.prompt, q)+'</b></summary>'
+    + (x.type === "match" ? '<ul class="rv-match">'+x.pairs.map(p => '<li>'+hl(p[0], q)+' → <b>'+hl(p[1], q)+'</b></li>').join("")+'</ul>' : '<p class="a">Rétt svar: <b>'+hl(x.opts[x.ans], q)+'</b></p>')
+    + '<p class="muted">'+hl(x.expl, q)+'</p></details>').join("") + '</section>';
   out.innerHTML = h;
 }
 let searchTimer = null;
 $("#searchInput").addEventListener("input", e => { clearTimeout(searchTimer); const v = e.target.value; searchTimer = setTimeout(() => runSearch(v), 150); });
 
 /* ---------- home ---------- */
+function dayKey(d){ const x = new Date(d); return x.getFullYear()+"-"+(x.getMonth()+1)+"-"+x.getDate(); }
+function streakInfo(){
+  const days = new Set(store.get("hist", []).map(r => dayKey(r.date)));
+  const today = new Date(); let cur = 0; const d = new Date(today);
+  if(!days.has(dayKey(d))) d.setDate(d.getDate() - 1);
+  while(days.has(dayKey(d))){ cur++; d.setDate(d.getDate() - 1); }
+  return {cur, today: days.has(dayKey(today))};
+}
 function renderHome(){
   const h = store.get("hist", []); const ms = h.filter(r=>r.id==="ms");
   const best = ms.length ? Math.max(...ms.map(r=>r.pct))+"%" : "–";
@@ -420,7 +485,7 @@ function renderHome(){
     '<div class="stat"><span class="v mono">'+ALL.length+'</span><span class="l">opinberar spurningar</span></div>'
     + '<div class="stat"><span class="v mono">'+LECTURES.filter((l,i)=>isRead(i+1)).length+'/'+LECTURES.length+'</span><span class="l">fyrirlestrar lesnir</span></div>'
     + '<div class="stat"><span class="v mono">'+best+'</span><span class="l">þín besta einkunn</span></div>'
-    + '<div class="stat"><span class="v mono">'+wrongN+'</span><span class="l">í „Villurnar mínar“'+(dueN ? ' · '+dueN+' í upprifjun í dag' : '')+'</span></div>';
+    + (() => { const st = streakInfo(); return '<div class="stat"><span class="v mono">'+st.cur+(st.cur ? ' 🔥' : '')+'</span><span class="l">'+(st.cur===1 ? 'dagur' : 'dagar')+' í röð'+(st.cur && !st.today ? ' · taktu próf í dag til að halda áfram' : '')+(dueN ? ' · '+dueN+' í upprifjun' : '')+'</span></div>'; })();
 }
 
 /* ---------- progress ---------- */
@@ -474,5 +539,5 @@ $("#importFile").addEventListener("change", e => {
 
 renderTests(); renderLectures(); runSearch("");
 route();
-initCloud();
+/* progress is stored in this browser only (no account sync) */
 })();
