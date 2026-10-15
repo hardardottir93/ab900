@@ -225,14 +225,15 @@ function renderMatch(q, done, right){
     <div class="qcard">
       <span class="qtype">Tengispurning</span>
       <p class="qtext">${esc(q.prompt)}</p>
-      <div class="match">${q.rowOrder.map(ri => {
-        const [left, correct] = q.pairs[ri]; const v = vals[ri] || "";
-        const cls = done ? (v === correct ? "right" : "wrong") : "";
-        return '<div class="match-row '+cls+'"><span class="match-left">'+esc(left)+'</span>'
-          + '<select class="match-sel" data-r="'+ri+'" '+(done?"disabled":"")+' aria-label="Pörun fyrir '+esc(left)+'"><option value="">Veldu…</option>'
-          + q.choiceOrder.map(c => '<option'+(c===v?' selected':'')+'>'+esc(c)+'</option>').join("") + '</select>'
-          + (done && v !== correct ? '<span class="match-fix">Rétt: <b>'+esc(correct)+'</b></span>' : '') + '</div>';
-      }).join("")}</div>
+      <p class="hint">${done ? "" : "Smelltu á atriði vinstra megin og svo á svarið hægra megin. Smelltu aftur til að breyta."}</p>
+      <div class="match${done ? " is-done" : ""}" id="match">
+        <svg class="match-lines" aria-hidden="true"></svg>
+        <div class="match-col" role="group" aria-label="Atriði">${q.rowOrder.map(ri =>
+          '<button type="button" class="m-item m-left" data-r="'+ri+'" '+(done?"disabled":"")+'><span class="m-text">'+esc(q.pairs[ri][0])+'</span><i class="m-dot"></i></button>'
+          + (done && vals[ri] !== q.pairs[ri][1] ? '<span class="match-fix">Rétt: <b>'+esc(q.pairs[ri][1])+'</b></span>' : '')).join("")}</div>
+        <div class="match-col" role="group" aria-label="Svör">${q.choiceOrder.map((c,ci) =>
+          '<button type="button" class="m-item m-right" data-c="'+ci+'" '+(done?"disabled":"")+'><i class="m-dot"></i><span class="m-text">'+esc(c)+'</span>'+(matchCap(q,c) > 1 ? '<span class="m-cap mono"></span>' : '')+'</button>').join("")}</div>
+      </div>
       ${done ? '<div class="feedback '+(ok?"ok":"no")+'"><strong>'+(ok?"Rétt":"Ekki alveg — "+q.pairs.filter((p,i)=>vals[i]===p[1]).length+" af "+q.pairs.length+" rétt")+'</strong><span>'+esc(q.expl)+'</span><a class="readmore" href="#fyrirlestur-'+q.lec+'">Lesa glósurnar: Lecture '+q.lec+' →</a></div>' : ""}
       <div class="qfoot">
         <span class="src">YouTube-fyrirlestur ${q.lec}: ${esc((LECTURES[q.lec-1]||{}).t||"")}</span>
@@ -240,12 +241,76 @@ function renderMatch(q, done, right){
       </div>
     </div>`;
   $("#quit").addEventListener("click", quit);
-  if(done){ $("#next").addEventListener("click", next); $("#next").focus(); return; }
-  const sels = [...document.querySelectorAll(".match-sel")];
-  const sync = () => { Q.draft = Q.draft || []; sels.forEach(s => { Q.draft[+s.dataset.r] = s.value; }); $("#submitMatch").disabled = sels.some(s => !s.value); };
-  sels.forEach(s => s.addEventListener("change", sync)); sync();
-  $("#submitMatch").addEventListener("click", () => pickMatch(q.pairs.map((_,i) => Q.draft[i] || "")));
+  const box = $("#match"), svg = box.querySelector(".match-lines");
+  const lefts = [...box.querySelectorAll(".m-left")], rights = [...box.querySelectorAll(".m-right")];
+  const rightBtn = c => rights.find(b => q.choiceOrder[+b.dataset.c] === c);
+  Q.draft = Q.draft || []; if(!done && Q.sel === undefined) Q.sel = null;
+  // colour per left row, in display order
+  const colour = ri => "var(--m" + (q.rowOrder.indexOf(ri) % 5) + ")";
+  function paint(){
+    const v = done ? vals : Q.draft;
+    lefts.forEach(b => {
+      const ri = +b.dataset.r, c = v[ri];
+      b.classList.toggle("is-sel", !done && Q.sel === ri);
+      b.classList.toggle("is-linked", !!c);
+      b.classList.toggle("right", done && c === q.pairs[ri][1]);
+      b.classList.toggle("wrong", done && c !== q.pairs[ri][1]);
+      b.style.setProperty("--mc", c ? colour(ri) : "");
+      b.setAttribute("aria-pressed", !done && Q.sel === ri);
+      b.setAttribute("aria-label", q.pairs[ri][0] + (c ? " — tengt við: " + c : " — ekki tengt"));
+    });
+    rights.forEach(b => {
+      const c = q.choiceOrder[+b.dataset.c], users = q.pairs.map((_,i) => i).filter(i => v[i] === c), cap = matchCap(q, c);
+      b.classList.toggle("is-linked", users.length > 0);
+      b.classList.toggle("is-full", !done && users.length >= cap);
+      b.style.setProperty("--mc", done ? "" : users.length === 1 ? colour(users[0]) : users.length ? "var(--accent)" : "");
+      const capEl = b.querySelector(".m-cap"); if(capEl) capEl.textContent = users.length + "/" + cap;
+    });
+    drawLines();
+    const sub = $("#submitMatch"); if(sub) sub.disabled = q.pairs.some((_,i) => !Q.draft[i]);
+  }
+  function drawLines(){
+    const bx = box.getBoundingClientRect();
+    svg.setAttribute("width", bx.width); svg.setAttribute("height", bx.height);
+    const v = done ? vals : Q.draft;
+    svg.innerHTML = lefts.map(b => {
+      const ri = +b.dataset.r, c = v[ri], rb = c && rightBtn(c); if(!rb) return "";
+      const a = b.querySelector(".m-dot").getBoundingClientRect(), z = rb.querySelector(".m-dot").getBoundingClientRect();
+      const x1 = a.left + a.width/2 - bx.left, y1 = a.top + a.height/2 - bx.top, x2 = z.left + z.width/2 - bx.left, y2 = z.top + z.height/2 - bx.top, mx = (x1 + x2) / 2;
+      const stroke = done ? (c === q.pairs[ri][1] ? "var(--good)" : "var(--bad)") : colour(ri);
+      return '<path d="M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'" stroke="'+stroke+'"'+(done && c !== q.pairs[ri][1] ? ' stroke-dasharray="6 5"' : '')+'/>';
+    }).join("");
+  }
+  function link(ri, c){
+    const cap = matchCap(q, c), users = q.pairs.map((_,i) => i).filter(i => Q.draft[i] === c && i !== ri);
+    if(users.length >= cap) Q.draft[users[0]] = "";   // answer already used: move it to this row
+    Q.draft[ri] = c; Q.sel = null;
+    const nextFree = q.rowOrder.find(i => !Q.draft[i]);
+    if(nextFree !== undefined) Q.sel = nextFree;
+    paint();
+  }
+  if(window.ResizeObserver){ const ro = new ResizeObserver(drawLines); ro.observe(box); }
+  if(done){ paint(); $("#next").addEventListener("click", next); $("#next").focus(); return; }
+  if(Q.sel === null) Q.sel = q.rowOrder.find(i => !Q.draft[i]) ?? null;
+  lefts.forEach(b => b.addEventListener("click", () => {
+    const ri = +b.dataset.r;
+    if(Q.sel === ri && Q.draft[ri]){ Q.draft[ri] = ""; }      // second click on a linked row unlinks it
+    Q.sel = ri; paint();
+  }));
+  rights.forEach(b => b.addEventListener("click", () => {
+    const c = q.choiceOrder[+b.dataset.c];
+    if(Q.sel === null || Q.sel === undefined){
+      const linked = q.pairs.map((_,i) => i).filter(i => Q.draft[i] === c);   // no row picked: clicking a used answer frees it
+      if(linked.length){ Q.draft[linked[linked.length-1]] = ""; Q.sel = linked[linked.length-1]; paint(); }
+      return;
+    }
+    if(Q.draft[Q.sel] === c){ Q.draft[Q.sel] = ""; paint(); return; }
+    link(Q.sel, c);
+  }));
+  paint();
+  $("#submitMatch").addEventListener("click", () => { Q.sel = undefined; pickMatch(q.pairs.map((_,i) => Q.draft[i] || "")); });
 }
+function matchCap(q, c){ return Math.max(1, q.pairs.filter(p => p[1] === c).length); }
 function pickMatch(vals){
   if(Q.picked!==null) return;
   const q = Q.qs[Q.i]; Q.picked = vals; Q.draft = null;
@@ -297,7 +362,7 @@ function pick(o){
   renderQ();
 }
 function next(){
-  if(Q.i+1<Q.qs.length){ Q.i++; Q.picked=null; Q.draft=null; renderQ(); window.scrollTo({top:0}); }
+  if(Q.i+1<Q.qs.length){ Q.i++; Q.picked=null; Q.draft=null; Q.sel=undefined; renderQ(); window.scrollTo({top:0}); }
   else finish();
 }
 function lecOf(id){ return id && id.startsWith("lql-") ? +id.slice(4) : 0; }
