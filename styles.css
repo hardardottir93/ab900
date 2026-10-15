@@ -262,3 +262,9 @@ mark{background:var(--warn-soft);color:var(--ink);border-radius:3px;padding:0 2p
 .more-tests summary{cursor:pointer;font-family:var(--f-display);font-weight:700;font-size:16px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .more-tests summary span{font-family:var(--f-body);font-weight:400;font-size:14px}
 .more-tests[open] summary{margin-bottom:12px}
+
+/* next lecture link on a lecture test result */
+.next-lec{display:grid;gap:4px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--ink)}
+.next-lec:hover{background:var(--surface)}
+.next-lec span{font-size:13px;color:var(--accent);font-weight:600}
+.next-lec b{font-family:var(--f-display);font-size:16px}

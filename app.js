@@ -300,7 +300,13 @@ function next(){
   if(Q.i+1<Q.qs.length){ Q.i++; Q.picked=null; Q.draft=null; renderQ(); window.scrollTo({top:0}); }
   else finish();
 }
-function quit(){ quizActive=false; Q=null; renderTests(); show("tests"); }
+function lecOf(id){ return id && id.startsWith("lql-") ? +id.slice(4) : 0; }
+function quit(){
+  const n = lecOf(Q && Q.id); quizActive=false; Q=null; renderTests();
+  if(n){ location.hash = "fyrirlestur-"+n; return; }
+  show("tests");
+}
+function goLecture(n){ quizActive=false; Q=null; renderTests(); location.hash = "fyrirlestur-"+n; }
 function finish(){
   const n = Q.qs.length, right = Q.results.filter(Boolean).length, pct = Math.round(right/n*100);
   const scaled = Math.round(pct*10);
@@ -311,8 +317,10 @@ function finish(){
   store.set("hist", hist.slice(0,200));
   const wrongs = Q.qs.filter((q,i) => !Q.results[i]);
   const verdict = pct>=80 ? "Markmiðinu náð." : pct>=70 ? "Yfir 700 en undir 80% markmiðinu." : "Undir 700. Farðu yfir villurnar hér fyrir neðan.";
+  const lec = lecOf(Q.id), nextLec = lec && LECTURES[lec] ? lec+1 : 0;
   $("#view-quiz").innerHTML = `
-    <div class="qhead"><span class="eyebrow">${esc(Q.name)}</span><button class="btn small" id="quit">Til baka</button></div>
+    <div class="qhead"><span class="eyebrow">${esc(Q.name)}</span><button class="btn small" id="quit">${lec ? "Til baka í fyrirlesturinn" : "Til baka"}</button></div>
+    ${nextLec ? '<a class="next-lec" href="#fyrirlestur-'+nextLec+'" id="nextLec"><span>Næsti fyrirlestur →</span><b>Lecture '+nextLec+': '+esc(LECTURES[nextLec-1].t)+'</b></a>' : ''}
     <div class="score">
       <div class="qhead"><span class="big mono">${pct}%</span><span class="mono muted">${right} / ${n} rétt</span></div>
       <div>
@@ -331,6 +339,7 @@ function finish(){
   $("#quit").addEventListener("click", quit);
   $("#again").addEventListener("click", () => start(id));
   const w = $("#wrongOnly"); if(w) w.addEventListener("click", () => start("wrong"));
+  const nl = $("#nextLec"); if(nl) nl.addEventListener("click", e => { e.preventDefault(); goLecture(nextLec); });
   window.scrollTo({top:0});
 }
 document.addEventListener("keydown", e => {
@@ -408,7 +417,7 @@ function renderLecture(n){
     + (secs.length > 2 ? '<div class="toc"><span class="eyebrow">On this page</span><div class="toc-list">'+secs.map((t,k) => '<button type="button" data-sec="sec-'+k+'">'+inline(t)+'</button>').join("")+'</div></div>' : '')
     + '<article class="notes">'+md(l.md)+'</article>'
     + '<div class="done-row"><button class="btn'+(isRead(n)?' is-on':'')+'" type="button" id="readToggle2">'+(isRead(n)?'✓ Read — nice work':'Mark this lecture as read')+'</button></div>'
-    + (LQ.concat(MQ).some(q => q.lec===n) ? '<section class="selftest"><div><span class="eyebrow">Test yourself</span><h2>'+LQ.concat(MQ).filter(q=>q.lec===n).length+' must-know questions from this lecture</h2></div><button class="btn primary" type="button" id="lecTest">Start</button></section>' : '')
+    + (lectureSet(n).qs.length ? '<section class="selftest"><div><span class="eyebrow">Test yourself</span><h2>'+lectureSet(n).qs.length+' must-know questions from this lecture</h2></div><button class="btn primary" type="button" id="lecTest">Start</button></section>' : '')
     + '<nav class="pager">'
     + (prev ? '<a href="#fyrirlestur-'+(n-1)+'"><span>← Previous</span><b>'+esc(prev.t)+'</b></a>' : '<span></span>')
     + (next ? '<a class="next" href="#fyrirlestur-'+(n+1)+'"><span>Next →</span><b>'+esc(next.t)+'</b></a>' : '<a class="next" href="#fyrirlestrar"><span>Done</span><b>Back to all lectures</b></a>')
