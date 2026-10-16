@@ -151,6 +151,7 @@ function show(v, n){
   if(v==="status") renderHist();
   if(v==="home") renderHome();
   if(v==="lecture") renderLecture(n);
+  if(v==="lec") renderLectures();
   if(v==="search") setTimeout(() => { const i = $("#searchInput"); if(i) i.focus(); }, 0);
 }
 function route(){
@@ -383,6 +384,8 @@ function finish(){
   const wrongs = Q.qs.filter((q,i) => !Q.results[i]);
   const verdict = pct>=80 ? "Markmiðinu náð." : pct>=70 ? "Yfir 700 en undir 80% markmiðinu." : "Undir 700. Farðu yfir villurnar hér fyrir neðan.";
   const lec = lecOf(Q.id), nextLec = lec && LECTURES[lec] ? lec+1 : 0;
+  if(lec && !isRead(lec)) setRead(lec, true);
+  renderLectures();
   $("#view-quiz").innerHTML = `
     <div class="qhead"><span class="eyebrow">${esc(Q.name)}</span><button class="btn small" id="quit">${lec ? "Til baka í fyrirlesturinn" : "Til baka"}</button></div>
     ${nextLec ? '<a class="next-lec" href="#fyrirlestur-'+nextLec+'" id="nextLec"><span>Næsti fyrirlestur →</span><b>Lecture '+nextLec+': '+esc(LECTURES[nextLec-1].t)+'</b></a>' : ''}
@@ -459,13 +462,17 @@ const VIDEOS = [["VFS2iJ-WoxI","1-2","11:13"],["1M0jR6ISXV0","1-3","11:43"],["Sf
 const videoUrl = n => VIDEOS[n-1] ? "https://www.youtube.com/watch?v=" + VIDEOS[n-1][0] + "&list=" + PLAYLIST + "&index=" + (n+1) : YT_URL;
 const isRead = n => !!store.get("read", {})[n];
 function setRead(n, v){ const r = store.get("read", {}); if(v) r[n] = 1; else delete r[n]; store.set("read", r); }
+function lecBest(n){
+  const h = store.get("hist", []).filter(r => r.id === "lql-"+n); if(!h.length) return "";
+  const b = Math.max(...h.map(r => r.pct)); return '<span class="chip '+(b>=80?"good":b>=70?"warn":"bad")+'">Test '+b+'%</span>';
+}
 function renderLectures(){
   const readN = LECTURES.filter((l,i) => isRead(i+1)).length;
   $("#lecProgress").innerHTML = '<div class="dbar-top"><b>'+readN+' of '+LECTURES.length+' lectures read</b><span class="mono">'+Math.round(readN/LECTURES.length*100)+'%</span></div><div class="bar"><i style="width:'+(readN/LECTURES.length*100)+'%"></i></div>';
   $("#lecList").innerHTML = ["1","2","3"].map(d => {
     const items = LECTURES.map((l,i) => [l,i]).filter(([l]) => l.d===d);
     return '<section class="lec-group"><div class="lec-group-head"><span class="eyebrow">'+DOMAINS[d][0]+' · '+items.length+' lectures</span><h2>'+DOMAINS[d][1]+'</h2></div><div class="lec-grid">'
-      + items.map(([l,i]) => '<a class="lec-card'+(isRead(i+1)?' is-read':'')+'" href="#fyrirlestur-'+(i+1)+'"><span class="n mono">'+String(i+1).padStart(2,"0")+(VIDEOS[i] ? ' · Module '+VIDEOS[i][1]+' · '+VIDEOS[i][2] : '')+(isRead(i+1)?'<span class="read-chip">✓ Read</span>':'')+'</span><h3>'+esc(l.t)+'</h3><p>'+esc(teaser(l))+'</p><span class="open">Open notes →</span></a>').join("")
+      + items.map(([l,i]) => '<a class="lec-card'+(isRead(i+1)?' is-read':'')+'" href="#fyrirlestur-'+(i+1)+'"><span class="n mono">'+String(i+1).padStart(2,"0")+(VIDEOS[i] ? ' · Module '+VIDEOS[i][1]+' · '+VIDEOS[i][2] : '')+'</span><h3>'+esc(l.t)+'</h3><p>'+esc(teaser(l))+'</p><div class="lec-foot"><span class="open">'+(isRead(i+1)?'Review notes →':'Open notes →')+'</span>'+lecBest(i+1)+(isRead(i+1)?'<span class="done-badge">✓ Done</span>':'')+'</div></a>').join("")
       + '</div></section>';
   }).join("");
 }
@@ -611,6 +618,8 @@ $("#importFile").addEventListener("change", e => {
   e.target.value = "";
 });
 
+/* one-time: lecture tests taken before auto-marking count as done */
+if(!store.get("readMig", false)){ store.get("hist", []).forEach(r => { const n = lecOf(r.id); if(n && LECTURES[n-1]) setRead(n, true); }); store.set("readMig", true); }
 renderTests(); renderLectures(); runSearch("");
 route();
 /* progress is stored in this browser only (no account sync) */

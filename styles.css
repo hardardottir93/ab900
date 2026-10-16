@@ -299,3 +299,9 @@ mark{background:var(--warn-soft);color:var(--ink);border-radius:3px;padding:0 2p
 .match .match-fix{font-size:13px;color:var(--good);margin:-2px 0 4px 4px}
 @media (max-width:560px){.match{gap:0 26px;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.m-item{font-size:13.5px;padding:9px 10px}}
 @media (prefers-reduced-motion: reduce){.m-item,.m-dot{transition:none}}
+
+/* lecture cards: clear done state */
+.lec-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.lec-foot .open{margin:0 auto 0 0}
+.done-badge{font-size:12px;font-weight:700;color:var(--good);background:var(--good-soft);border:1px solid color-mix(in srgb,var(--good) 40%,transparent);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.lec-card.is-read{border-color:color-mix(in srgb,var(--good) 55%,var(--line));box-shadow:inset 3px 0 0 var(--good)}
