@@ -105,6 +105,21 @@ function nextDueText(qs, wrong){
   const t = Math.min(...qs.map(q => wrong[q.key].due)); const days = Math.max(1, Math.ceil((t - Date.now()) / DAY));
   return days === 1 ? "á morgun" : "eftir " + days + " daga";
 }
+/* exam objectives (as in Microsoft's results page) → lectures that cover them */
+const OBJECTIVES = [
+  ["1.1","1","Identify the core objects of Microsoft 365 services",[8,9,10,11,13]],
+  ["1.2","1","Understand the Microsoft 365 security principles",[1,2,3,4]],
+  ["1.3","1","Identify the core security features of Microsoft 365 services",[5,6,7,12]],
+  ["2.1","2","Understand Microsoft Purview",[14,15]],
+  ["2.2","2","Understand data security implications of Copilot",[19,21]],
+  ["2.3","2","Identify data protection and governance risks for Microsoft 365 and Copilot",[16,17]],
+  ["2.4","2","Identify and monitor oversharing in SharePoint in Microsoft 365",[18]],
+  ["3.1","3","Understand features and capabilities of Copilot and agents",[20,22,23,24,26]],
+  ["3.2","3","Perform basic administrative tasks for Copilot",[25,27,28,29,30,31,32]],
+  ["3.3","3","Perform basic administrative tasks for agents",[33,34,35,36,37,38,39]]
+];
+const DOM_INFO = {1:["Kjarnaþjónustur, auðkenni og öryggi","30–35%"], 2:["Gagnavernd og stjórnun","35–40%"], 3:["Copilot og agents","25–30%"]};
+function lecRange(ls){ const out = []; let a = ls[0], b = ls[0]; ls.slice(1).concat([null]).forEach(x => { if(x === b+1) b = x; else { out.push(a===b ? ""+a : a+"–"+b); a = b = x; } }); return out.join(", "); }
 function testSets(){
   const wrong = srsGet(); const now = Date.now();
   const wrongQs = UNIQUE.concat(LQ, MQ, DQ).filter(q => wrong[q.key]);
@@ -115,9 +130,8 @@ function testSets(){
     {id:"lq", name:"Fyrirlestraprófið: allt", desc:"Allt sem kennarinn sagði að þyrfti pottþétt að kunna, úr öllum 39 fyrirlestrunum.", qs:LQ.concat(MQ), group:"lec", so:true},
     {id:"mq", name:"Tengispurningar", desc:"Paraðu saman atriði, t.d. tól og hlutverk þess, eins og í Microsoft-prófunum.", qs:MQ, group:"lec", so:true},
     {id:"diff", name:"Hver er munurinn?", desc:"Stuttar spurningar um hugtök sem ruglast oft saman, t.d. sensitivity labels og DLP. 15 í hvert skipti.", qs:DQ, pick:15, group:"lec"},
-    {id:"lq1", name:"Svið 1: Kjarnaþjónustur, auðkenni og öryggi", desc:"Fyrirlestrar 1–13.", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="1"), group:"more", so:true},
-    {id:"lq2", name:"Svið 2: Gagnavernd og stjórnun", desc:"Fyrirlestrar 14–19 (Purview og oversharing).", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="2"), group:"more", so:true},
-    {id:"lq3", name:"Svið 3: Copilot og agents", desc:"Fyrirlestrar 20–39.", qs:LQ.concat(MQ).filter(q=>lecDomain(q)==="3"), group:"more", so:true},
+    ...["1","2","3"].map(d => ({id:"lq"+d, name:"Svið "+d+": "+DOM_INFO[d][0], desc:"", qs:LQ.concat(MQ, DQ).filter(q=>lecDomain(q)===d), group:"dom", so:true})),
+    ...OBJECTIVES.map(([code, d, t, ls]) => ({id:"obj-"+code, name:code+" "+t, desc:"Lectures "+lecRange(ls), qs:LQ.concat(MQ, DQ).filter(q => ls.includes(q.lec)), group:"obj", dom:d, code, t, so:true})),
     {id:"due", name:"Upprifjun dagsins", desc:dueQs.length ? "Villur sem eru komnar á tíma. Svarirðu rétt kemur spurningin næst eftir 3 daga, svo eftir 7 daga, og dettur svo út. Svarirðu vitlaust byrjar hún upp á nýtt á morgun." : (wrongQs.length ? "Ekkert á dagskrá í dag. Næsta upprifjun: " + nextDueText(wrongQs, wrong) + "." : "Tómt í bili. Spurningar sem þú svarar vitlaust koma hingað daginn eftir."), qs:dueQs, group:"due"},
     {id:"wrong", name:"Villurnar mínar", desc:wrongQs.length ? "Allar spurningar sem þú átt eftir að ná tökum á, úr öllum prófunum. Þær detta út eftir þrjár réttar upprifjanir með millibili." : "Tómt í bili. Spurningar sem þú svarar vitlaust í hvaða prófi sem er safnast hingað.", qs:wrongQs, group:"more"}
   ];
@@ -189,7 +203,12 @@ function renderTests(){
     <span class="eyebrow group-label">Úr YouTube-fyrirlestrunum</span>
     <div class="tests">${sets.filter(s=>s.group==="lec").map(row).join("")}</div>
     <p class="muted src-note">Byggt á <a href="${YT_URL}" target="_blank" rel="noopener">AB-900 fyrirlestraröðinni á YouTube</a>. Á hverri fyrirlestrasíðu er líka stutt próf úr þeim fyrirlestri.</p>
-    <details class="more-tests"><summary>Fleiri próf <span class="muted">eftir sviðum og villurnar mínar</span></summary>
+    <span class="eyebrow group-label">Eftir hlutum prófsins</span>
+    <p class="muted src-note">Prófið skiptist í þrjá hluta. Hér eru spurningar úr fyrirlestrunum fyrir hvern hluta, svo þú getir æft þann sem gekk verst.</p>
+    <div class="obj">${["1","2","3"].map(d => { const ds = sets.find(s => s.id==="lq"+d); return '<section class="obj-dom"><div class="obj-head"><div><span class="eyebrow">Svið '+d+' · '+DOM_INFO[d][1]+' af prófinu</span><h3>'+DOM_INFO[d][0]+'</h3></div><div class="side">'+bestChip(ds.id)+'<button class="btn primary" data-start="'+ds.id+'">Byrja · '+ds.qs.length+'</button></div></div><details class="obj-sub"><summary>Æfa einn undirhluta ('+sets.filter(s => s.group==="obj" && s.dom===d).length+')</summary>'
+      + sets.filter(s => s.group==="obj" && s.dom===d).map(s => '<div class="obj-row"><span class="obj-code mono">'+s.code+'</span><div class="obj-meta"><b>'+esc(s.t)+'</b><span class="muted">'+esc(s.desc)+' · '+s.qs.length+' spurningar</span></div><div class="side">'+bestChip(s.id)+'<button class="btn small" data-start="'+s.id+'">Byrja</button></div></div>').join("")
+      + '</details></section>'; }).join("")}</div>
+    <details class="more-tests"><summary>Villurnar mínar <span class="muted">allt sem þú átt eftir að ná tökum á</span></summary>
       <div class="tests">${sets.filter(s=>s.group==="more").map(row).join("")}</div>
     </details>`;
   const saveOpts = () => store.set("opts", {sq:$("#optSQ").checked, so:$("#optSO").checked});

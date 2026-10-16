@@ -305,3 +305,20 @@ mark{background:var(--warn-soft);color:var(--ink);border-radius:3px;padding:0 2p
 .lec-foot .open{margin:0 auto 0 0}
 .done-badge{font-size:12px;font-weight:700;color:var(--good);background:var(--good-soft);border:1px solid color-mix(in srgb,var(--good) 40%,transparent);border-radius:999px;padding:2px 9px;white-space:nowrap}
 .lec-card.is-read{border-color:color-mix(in srgb,var(--good) 55%,var(--line));box-shadow:inset 3px 0 0 var(--good)}
+
+/* tests by exam objective */
+.obj{display:grid;gap:12px}
+.obj-dom{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.obj-head{display:flex;justify-content:space-between;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:14px 16px;background:var(--sunk)}
+.obj-head h3{margin-top:2px}
+.obj-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:11px 16px;border-top:1px solid var(--line)}
+.obj-code{font-size:14px;font-weight:600;color:var(--accent)}
+.obj-meta{display:grid;gap:1px;min-width:0}
+.obj-meta b{font-weight:500;font-size:14.5px;line-height:1.35}
+.obj-meta .muted{font-size:12.5px}
+.obj .side{display:flex;gap:8px;align-items:center}
+@media (max-width:560px){.obj-row{grid-template-columns:36px minmax(0,1fr)}.obj-row .side{grid-column:2}}
+.obj-head{background:var(--surface)}
+.obj-sub summary{cursor:pointer;padding:10px 16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);font-weight:500}
+.obj-sub summary:hover{color:var(--ink)}
+.obj-sub[open] summary{color:var(--ink)}
